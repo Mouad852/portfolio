@@ -23,6 +23,15 @@ type Errors = Partial<Record<FieldName, string>>;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const PHONE = /^[+()\d][\d\s()-]{5,}$/;
 
+/**
+ * Public by design. Web3Forms' free tier only accepts submissions from the
+ * browser — a server-side POST answers 403 "Pro plan is required" — so the key
+ * ships in the bundle. It is a form identifier, not a credential: it cannot
+ * read past submissions or reach the account, and the worst it permits is spam
+ * to this form, which their filtering and the honeypot below absorb.
+ */
+const ACCESS_KEY = process.env.NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY;
+
 export const ContactForm = ({ locale }: { locale: Locale }) => {
   const { contact } = getContent(locale);
   const { fields, validation } = contact;
@@ -79,25 +88,63 @@ export const ContactForm = ({ locale }: { locale: Locale }) => {
     setErrors(nextErrors);
     if (Object.keys(nextErrors).length > 0) return;
 
+    // Honeypot: pretend it worked so a bot gets no signal to learn from.
+    if (honeypot.current?.value) {
+      setStatus("sent");
+      return;
+    }
+
+    if (!ACCESS_KEY) {
+      console.error("NEXT_PUBLIC_WEB3FORMS_ACCESS_KEY is not set; cannot send.");
+      setStatus("failed");
+      return;
+    }
+
     setStatus("sending");
 
+    const channelLabel =
+      fields.channel.options.find((option) => option.value === channel)?.label ?? channel;
+    const needLabel =
+      fields.need.options.find((option) => option.value === values.need)?.label ?? values.need;
+
     try {
-      const response = await fetch("/api/contact", {
+      const response = await fetch("https://api.web3forms.com/submit", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        // charset is explicit because French submissions carry accents, and a
+        // provider guessing latin-1 would mangle them.
+        headers: {
+          "Content-Type": "application/json; charset=utf-8",
+          Accept: "application/json",
+        },
         body: JSON.stringify({
-          ...values,
-          channel,
-          company: honeypot.current?.value ?? "",
+          access_key: ACCESS_KEY,
+          subject: `Portfolio enquiry — ${values.name}`,
+          from_name: "Portfolio contact form",
+          // Only meaningful when they actually gave an address — someone who
+          // chose WhatsApp has no email to reply to, and a bogus reply-to is
+          // worse than none.
+          ...(channel === "email" ? { replyto: values.detail } : {}),
+          // Web3Forms' own honeypot convention: they drop the submission
+          // server-side if this arrives non-empty.
+          botcheck: "",
+          Name: values.name,
+          "Preferred channel": channelLabel,
+          "Reach them at": values.detail,
+          "Looking for": needLabel,
+          Message: values.message,
         }),
       });
 
-      if (!response.ok) throw new Error(String(response.status));
+      const result = await response.json().catch(() => null);
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.message ?? String(response.status));
+      }
 
       setStatus("sent");
       // Move focus to the confirmation so screen readers land on it.
       requestAnimationFrame(() => successRef.current?.focus());
-    } catch {
+    } catch (error) {
+      console.error("Contact form submission failed:", error);
       setStatus("failed");
     }
   };
