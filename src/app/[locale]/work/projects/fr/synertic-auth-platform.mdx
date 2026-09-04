@@ -1,0 +1,91 @@
+---
+title: "Une plateforme d'autorisation multi-tenant, en production"
+subtitle: "Backend, pipeline, infrastructure et cinq SDK clients — SYNERTIC, 2026"
+publishedAt: "2026-08-08"
+summary: "Conception de l'architecture d'autorisation d'une plateforme SaaS multi-tenant, mise en place du pipeline CI/CD qui la livre, et exploitation sur Oracle Cloud. 186 req/s à 79 ms p95, 729 tests par pipeline."
+tag: "Production"
+images: []
+team: []
+---
+
+Deux mois chez **SYNERTIC** à Casablanca, sur le service d'autorisation d'une plateforme SaaS
+multi-tenant. C'est le seul projet de ce site qui supporte du trafic de production réel : il est
+donc documenté avec le même niveau de détail que les autres, même si le code ne m'appartient pas.
+
+## Le problème
+
+Le multi-tenant rend l'autorisation plus difficile qu'il n'y paraît. Il ne suffit pas de savoir
+*qui* est la personne et *quel rôle* elle détient — il faut aussi savoir *les données de quel
+tenant* elle cherche à atteindre, et être certain qu'une requête portant un jeton valide pour le
+tenant A ne pourra jamais toucher le tenant B. Une seule erreur, et ce n'est plus un rapport de bug
+mais une divulgation.
+
+L'approche habituelle — des vérifications de permissions éparpillées dans le code des services —
+rend cette garantie impossible à auditer. On ne peut pas lire une base de code et prouver que la
+règle tient partout.
+
+## Ce que j'ai construit
+
+### L'autorisation comme préoccupation séparée
+
+Java 21 et **Spring Boot 4** sur PostgreSQL, avec les deux problèmes difficiles délibérément
+délégués plutôt que réimplémentés :
+
+- **Keycloak** gère l'identité — utilisateurs, tenants, jetons et flux OIDC.
+- **Cerbos** gère les décisions de politique comme point de décision, avec des règles écrites en
+  CEL.
+
+Le service demande « ce principal peut-il faire ceci sur cette ressource ? » et applique la réponse.
+Comme les politiques vivent au même endroit sous forme de données plutôt que dispersées dans du
+code, elles peuvent être lues, relues et testées comme un ensemble. **RBAC et ABAC fonctionnent
+ensemble** — le rôle pour la question grossière, les attributs pour la question fine — et
+l'isolation des tenants est appliquée à la frontière de l'API plutôt que confiée aux appelants.
+
+L'ensemble est fail-closed : une requête ambiguë est refusée.
+
+### Le pipeline
+
+Une chaîne **GitLab CI/CD** qui fait les choses dans le bon ordre : Kaniko construit les images sans
+démon Docker, Trivy les analyse à la recherche de vulnérabilités connues, le déploiement est
+automatisé, et des tâches planifiées assurent la maintenance. **729 tests sont exécutés à chaque
+pipeline** — non comme un badge, mais parce qu'un changement d'autorisation qui passe la revue et
+échoue à un test est exactement celui qu'on veut arrêter.
+
+### L'exploitation
+
+Déployée sur une VM **Oracle Cloud** avec Prometheus, Grafana et Loki pour les métriques, les
+tableaux de bord et les logs, et **Ansible** automatisant déploiement, sauvegardes et alertes pour
+que rien ne dépende de la mémoire de quelqu'un.
+
+Puis je l'ai mesurée, parce que « ça semble rapide » n'est pas un chiffre : **186 requêtes par
+seconde pour une latence p95 de 79 ms** en test de charge.
+
+### Cinq SDK, un seul comportement
+
+L'API de la plateforme est consommée depuis plusieurs langages, j'ai donc publié des clients pour
+**TypeScript, Python, Java, .NET et Go**. Le point intéressant n'est pas d'écrire cinq clients —
+c'est de les garder honnêtes. Une **suite de conformité partagée** exécute les mêmes scénarios
+contre chaque SDK, de sorte qu'un changement de comportement dans un langage ne peut pas diverger
+silencieusement des autres au fil des versions.
+
+Deux applications clientes sont passées en production avec ces SDK.
+
+### La console d'administration
+
+Une console en **React et TypeScript** pour administrer tenants et politiques, incluant un éditeur
+visuel de workflows d'approbation BPMN construit sur bpmn-js et relié à un moteur **Flowable** —
+pour qu'une personne non technique puisse dessiner une chaîne de validation et la voir réellement
+s'exécuter.
+
+## Résultats
+
+- **186 req/s** à **79 ms p95** en charge
+- **729 tests** à chaque exécution du pipeline
+- **5 SDK clients** tenus à un comportement unique par une suite de conformité partagée
+- **2 applications clientes** en production
+
+## Pourquoi ce projet compte
+
+Tout le reste de mon portfolio, je pourrais le reconstruire en un week-end. Celui-ci a tourné sous
+charge réelle, pour de vrais tenants, avec de vraies conséquences en cas d'erreur d'autorisation —
+et les chiffres ci-dessus sont mesurés, pas estimés.

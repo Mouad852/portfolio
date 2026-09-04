@@ -1,0 +1,55 @@
+---
+title: "MedReminder — des rappels qui doivent arriver à l'heure"
+subtitle: "Notifications temps réel et tâches planifiées sur NestJS, Socket.IO et Redis"
+publishedAt: "2026-01-17"
+summary: "Une application d'observance des traitements et des rendez-vous pour les patients atteints de maladies chroniques, construite autour d'une file de tâches et de websockets plutôt que d'une boucle requête/réponse."
+tag: "Backend & temps réel"
+images: []
+team: []
+link: "https://github.com/Mouad852/MedReminder"
+---
+
+Une application full-stack qui aide les patients atteints de maladies chroniques à suivre leurs
+prises de médicaments et leurs rendez-vous.
+[Code source sur GitHub](https://github.com/Mouad852/MedReminder), avec une
+[démonstration vidéo](https://youtu.be/sdr5R-KdctQ).
+
+## Pourquoi ce projet est différent
+
+Mes autres projets répondent à des requêtes. Celui-ci doit agir **quand personne ne demande rien** :
+une prise est due à 20 h que l'application soit ouverte ou non, et un rappel de rendez-vous ne vaut
+plus rien le lendemain.
+
+Cela inverse l'architecture. Les problèmes intéressants cessent d'être « comment modéliser cette
+ressource » pour devenir la planification, la distribution, et ce qui se passe quand l'utilisateur
+n'est pas là pour recevoir.
+
+## Ce que j'ai construit
+
+Les **tâches planifiées** passent par **Bull sur Redis**. Les rappels sont des jobs en file avec une
+échéance, pas des lignes interrogées par un script cron — ce qui signifie que les tentatives, le
+backoff et la gestion des échecs viennent de la file plutôt que d'un code que j'aurais dû réussir
+moi-même.
+
+La **distribution en direct** passe par **Socket.IO**, pour qu'un rappel atteigne immédiatement une
+session ouverte au lieu d'attendre le prochain sondage ou rechargement de page.
+
+L'**e-mail** sert de voie de repli, parce que toute la fonctionnalité ne vaut rien si elle ne
+fonctionne que pour les utilisateurs qui regardent leur écran.
+
+Le backend est en **NestJS avec Prisma sur MongoDB**, l'authentification en JWT via Passport, et le
+frontend en **React avec Tailwind et Vite**. L'ensemble tourne sous Docker Compose.
+
+## Fonctionnalités
+
+- Suivi des traitements avec posologies et rappels quotidiens
+- Prise de rendez-vous par spécialité, lieu et date, avec rappels associés
+- Un tableau de bord des prises du jour, des rendez-vous à venir et de l'observance dans le temps
+- Inscription, authentification JWT, gestion du profil
+
+## Ce que j'en retiens
+
+Les files changent la façon de penser l'échec. Dans un service requête/réponse, un échec a
+quelqu'un qui l'attend et un endroit évident où le signaler. Une tâche de fond qui échoue à 20 h n'a
+ni l'un ni l'autre — alors la politique de reprise, l'idempotence et l'observabilité cessent d'être
+des options pour devenir la conception elle-même.

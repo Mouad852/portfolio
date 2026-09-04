@@ -1,0 +1,72 @@
+---
+title: "Pitstop — GitOps, service mesh, et un incident bien réel"
+subtitle: "Kubernetes sur AWS EKS avec un pipeline DevSecOps, provisionné entièrement en code"
+publishedAt: "2026-04-19"
+summary: "Une application de gestion de garage en microservices, menée des conteneurs jusqu'à une plateforme Kubernetes de qualité production : Argo CD, mTLS Istio, Terraform sur EKS et un pipeline de sécurité à quatre étapes."
+tag: "Cloud & DevOps"
+images: []
+team: []
+link: "https://gitlab.com/pitstop-mouad-chaouni/pitstop-kubernetes"
+---
+
+L'application est un système de gestion de garage — clients, véhicules, planification d'atelier —
+construit en microservices sur Node.js, Vue, RabbitMQ et MySQL. Cette partie-là est ordinaire.
+**C'est la plateforme qui la fait tourner qui constitue le projet.**
+
+Le travail d'infrastructure se trouve sur
+[GitLab](https://gitlab.com/pitstop-mouad-chaouni/pitstop-kubernetes) ; les services applicatifs
+sont [sur GitHub](https://github.com/Mouad852/pitstop-microservices-app).
+
+## Le déploiement comme donnée, pas comme commande
+
+Orchestration sur **Kubernetes**, livrée via **Argo CD** en modèle GitOps : l'état souhaité du
+cluster vit dans Git, et Argo réconcilie la réalité avec lui. Personne ne lance `kubectl apply`
+depuis son poste, ce qui signifie que la réponse à « qu'est-ce qui est déployé en ce moment ? » est
+un hash de commit plutôt qu'une supposition, et qu'un retour arrière est un revert.
+
+## Zéro confiance à l'intérieur du cluster
+
+Un service mesh **Istio** avec **TLS mutuel** entre tous les services, et des politiques
+d'autorisation écrites sur l'identité des charges de travail plutôt que sur la position réseau. Un
+pod compromis ne peut pas simplement appeler ce qu'il veut : être à l'intérieur du cluster ne donne
+aucun droit en soi. C'est tout l'enjeu — le périmètre réseau n'est pas une frontière de sécurité.
+
+Les secrets sont gérés avec **Sealed Secrets**, ce qui permet de stocker des secrets chiffrés dans
+Git en toute sécurité, seul le cluster pouvant les déchiffrer.
+
+## Un pipeline qui refuse le mauvais code
+
+Quatre barrières, dans l'ordre qui détecte les problèmes au moindre coût :
+
+| Étape | Outil | Détecte |
+|---|---|---|
+| Secrets | **Gitleaks** | Identifiants commités par accident |
+| Analyse statique | **SonarQube** | Vulnérabilités au niveau du code, avant build |
+| Conteneurs | **Trivy** | CVE connues dans les couches d'image |
+| Application en marche | **OWASP ZAP** | Ce qui n'apparaît que face à une cible vivante |
+
+Secrets → build → scan → déploiement. Un échec à n'importe quelle barrière arrête la livraison.
+
+## Infrastructure as code
+
+**AWS EKS et RDS provisionnés avec Terraform**, garde-fou de coût inclus — parce qu'un compte
+étudiant et un cluster sans limite forment une histoire à la fin prévisible et coûteuse.
+L'environnement est reproductible depuis le dépôt, pas depuis la mémoire.
+
+## La partie que je n'avais pas prévue
+
+Prometheus, Grafana et Loki ont été installés par souci d'exhaustivité. Puis le cluster s'est
+effondré sous la charge.
+
+Avoir la stack d'observabilité déjà en place a transformé un mystère en enquête : les métriques ont
+montré où la saturation commençait, les logs ont montré ce qui s'est passé ensuite, et le correctif
+a découlé des preuves plutôt que de redémarrages successifs jusqu'à disparition du symptôme.
+
+**Diagnostiquer une vraie surcharge m'a plus appris que construire le pipeline.** C'est aussi la
+différence honnête entre avoir configuré du monitoring et s'en être réellement servi — la plupart
+des tutoriels s'arrêtent à la capture d'écran du tableau de bord.
+
+## Stack
+
+Docker · Kubernetes · Argo CD · Istio · Terraform · AWS EKS/RDS · GitLab CI/CD · Gitleaks ·
+SonarQube · Trivy · OWASP ZAP · Sealed Secrets · Prometheus · Grafana · Loki

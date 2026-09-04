@@ -1,0 +1,84 @@
+---
+title: "MedCore — une plateforme de clinique dont l'autorisation tient vraiment"
+subtitle: "Six microservices métier, sept rôles, et une démo en ligne que vous pouvez parcourir"
+publishedAt: "2026-08-31"
+summary: "Un système complet de gestion de clinique en microservices Spring Boot et React, sécurisé par Keycloak et un modèle d'autorisation à trois couches. 149 tests, 16 conteneurs et une démo hébergée."
+tag: "Backend & plateforme"
+images: []
+team: []
+link: "https://myheart.mdchaouni.workers.dev"
+---
+
+## Essayez avant de lire
+
+**[myheart.mdchaouni.workers.dev](https://myheart.mdchaouni.workers.dev)** — la démo tourne sur des
+données en mémoire, mais elle reproduit fidèlement l'essentiel : autorisation, propriété des
+dossiers, machine à états des rendez-vous, et écritures persistantes le temps de la session.
+Connectez-vous en médecin, puis en secrétaire : vous avez sous les yeux deux applications
+réellement différentes.
+
+Il existe aussi une [démonstration vidéo complète](https://youtu.be/AJEzYZvm-dY), et le
+[code source est sur GitHub](https://github.com/Mouad852/MedCore).
+
+## Le problème
+
+Une clinique n'est pas une seule application. Une secrétaire planifie et replanifie mais ne doit
+jamais voir un diagnostic. Un médecin rédige des ordonnances mais n'a rien à faire dans le registre
+de facturation. Un laborantin dépose des résultats pour les demandes qui lui sont assignées, et
+rien d'autre. Un patient voit exactement son dossier, et celui de personne d'autre.
+
+La plupart des systèmes modélisent cela avec une colonne `role` et une pile de `if` dans
+l'interface. Cela échoue comme la sécurité échoue d'habitude : silencieusement, et seulement pour
+la personne qui trouve la faille.
+
+## Ce que j'ai construit
+
+Six microservices métier — patients, rendez-vous, facturation, ordonnances, laboratoire et
+utilisateurs — derrière une **Spring Cloud Gateway**, avec Eureka pour la découverte de services,
+OpenFeign pour les appels inter-services et des circuit breakers Resilience4j pour qu'un service
+lent n'entraîne pas les autres. Chaque service possède sa propre base PostgreSQL ; rien ne traverse
+une frontière de schéma.
+
+Seize conteneurs au total : huit services, sept bases de données et Keycloak.
+
+### L'autorisation en trois couches
+
+C'est la partie qui m'intéresse, et la raison d'être du projet.
+
+**À la passerelle**, des règles par rôle rejettent les requêtes qui n'ont aucune raison d'atteindre
+un service : le jeton d'une secrétaire n'approche jamais l'API des ordonnances.
+
+**Dans chaque service**, le JWT est validé indépendamment. Un service ne suppose pas qu'un
+composant en amont a déjà vérifié ; une requête arrivant par un autre chemin est traitée de la même
+manière.
+
+**Au niveau du dossier**, la propriété est vérifiée à partir des claims du jeton. Franchir les deux
+premières couches vous amène au bon endpoint — pas au dossier de quelqu'un d'autre. Un médecin qui
+demande un patient qui ne lui est pas assigné est refusé à la ligne, pas à la route.
+
+L'authentification repose sur **Keycloak** en OpenID Connect, avec le flux Authorization Code et
+PKCE. Les valeurs par défaut sont volontairement fail-closed : une requête ambiguë est refusée, pas
+autorisée.
+
+### Le frontend
+
+Une interface **React** adaptée à sept rôles, avec TanStack Query pour l'état serveur. Chaque rôle
+dispose d'une navigation, d'un tableau de bord et de possibilités différents — pas du même écran
+avec des boutons masqués en CSS. La démo hébergée reproduit tout cela sans backend, ce qui rend le
+lien en haut de page réellement utile.
+
+## Résultats
+
+- **6 microservices métier**, 16 conteneurs, une base par service
+- **7 rôles**, chacun avec une interface véritablement distincte
+- **149 tests** — 92 Vitest côté frontend, 57 JUnit répartis sur trois modules backend, couvrant le
+  cycle de vie des rendez-vous, les règles de réservation, le contrôle d'accès et les statuts de
+  paiement
+- Une **démo en ligne** ouvrable sans rien installer
+
+## Ce que je referais autrement
+
+Le modèle à trois couches est le bon, mais les règles de la passerelle et celles des services sont
+maintenues séparément : ajouter un rôle demande donc de modifier deux endroits. Un service de
+politique partagé — l'approche Cerbos que j'ai ensuite utilisée chez SYNERTIC — ferait des règles un
+seul artefact au lieu de deux, et les rendrait testables isolément.

@@ -1,59 +1,55 @@
-// FRENCH CONTENT — awaiting translation (plan phase 7).
-//
-// This file is currently a copy of content.en.tsx. Because it is typed against
-// the same Person / Home / About / … types, TypeScript will fail the build if a
-// field is ever dropped here, so the two locales cannot silently drift.
-//
-// Translate the user-facing strings in place; keep every key.
-
-import { About, Blog, Contact, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
-import { Line, Row, Text } from "@once-ui-system/core";
+import type {
+  About,
+  Blog,
+  Contact,
+  Gallery,
+  Home,
+  Newsletter,
+  Person,
+  Social,
+  Work,
+} from "@/types";
+import { SmartLink, Text } from "@once-ui-system/core";
 
 const person: Person = {
-  firstName: "Selene",
-  lastName: "Yu",
-  name: `Selene Yu`,
-  role: "Design Engineer",
+  firstName: "Mouad",
+  lastName: "Chaouni",
+  name: "Mouad Chaouni",
+  // Localisation, not translation: "Platform Engineer" has no settled French
+  // equivalent, while "Cloud" is the term the French and Moroccan markets
+  // actually search for — and it matches the wording of the French CV.
+  role: "Ingénieur Backend & Cloud",
   avatar: "/images/avatar.jpg",
-  email: "example@gmail.com",
-  location: "Asia/Jakarta", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  languages: ["English", "Bahasa"], // optional: Leave the array empty if you don't want to display languages
-  locale: "en", // BCP 47 language tag for the HTML lang attribute, e.g., 'en', 'ja', 'zh-TW'
+  email: "mdchaouni@gmail.com",
+  location: "Africa/Casablanca", // identifiant de fuseau horaire IANA
+  languages: ["Arabe", "Français", "Anglais"],
+  locale: "fr", // balise BCP 47 pour l'attribut lang du HTML
 };
 
 const newsletter: Newsletter = {
   display: false,
-  title: <>Subscribe to {person.firstName}'s Newsletter</>,
-  description: <>My weekly newsletter about creativity and engineering</>,
+  title: <>Abonnez-vous à la newsletter de {person.firstName}</>,
+  description: <>Ma newsletter hebdomadaire sur l'ingénierie et la création</>,
 };
 
 const social: Social = [
-  // Links are automatically displayed.
-  // Import new icons in /once-ui/icons.ts
-  // Set essentials: true for links you want to show on the about page
   {
     name: "GitHub",
     icon: "github",
-    link: "https://github.com/once-ui-system",
+    link: "https://github.com/Mouad852",
     essential: true,
   },
   {
     name: "LinkedIn",
     icon: "linkedin",
-    link: "https://www.linkedin.com/company/once-ui/",
+    link: "https://www.linkedin.com/in/mouad-chaouni/",
     essential: true,
   },
   {
-    name: "Instagram",
-    icon: "instagram",
-    link: "https://www.instagram.com/once_ui/",
+    name: "GitLab",
+    icon: "gitlab",
+    link: "https://gitlab.com/pitstop-mouad-chaouni",
     essential: false,
-  },
-  {
-    name: "Threads",
-    icon: "threads",
-    link: "https://www.threads.com/@once_ui",
-    essential: true,
   },
   {
     name: "Email",
@@ -67,29 +63,23 @@ const home: Home = {
   path: "/",
   image: "/images/og/home.jpg",
   label: "Accueil",
-  title: `${person.name}'s Portfolio`,
-  description: `Portfolio website showcasing my work as a ${person.role}`,
-  headline: <>Building bridges between design and code</>,
+  title: `${person.name} — ${person.role}`,
+  description:
+    "Ingénieur backend et cloud à Rabat, Maroc. Je conçois des systèmes multi-tenants sécurisés en Java et Spring Boot, et je les mets en production sur Kubernetes avec CI/CD, observabilité et infrastructure as code.",
+  headline: <>Ingénieur Backend & Cloud</>,
   featured: {
     display: true,
     title: (
-      <Row gap="12" vertical="center">
-        <strong className="ml-4">Once UI</strong>{" "}
-        <Line background="brand-alpha-strong" vert height="20" />
-        <Text marginRight="4" onBackground="brand-medium">
-          Featured work
-        </Text>
-      </Row>
+      <Text onBackground="brand-medium" marginRight="4">
+        <strong className="ml-4">MedCore</strong> — essayez la démo en ligne
+      </Text>
     ),
-    href: "/work/building-once-ui-a-customizable-design-system",
+    href: "/work/medcore",
   },
   subline: (
     <>
-      I'm {person.firstName}, a {person.role.toLowerCase()} at{" "}
-      <Text as="span" size="xl" weight="strong">
-        ONCE UI
-      </Text>
-      , where I craft intuitive <br /> user experiences. After hours, I build my own projects.
+      Je suis {person.firstName}. Je conçois des systèmes multi-tenants sécurisés — de la couche
+      d'autorisation jusqu'au pipeline qui les met en production.
     </>
   ),
 };
@@ -97,8 +87,8 @@ const home: Home = {
 const about: About = {
   path: "/about",
   label: "À propos",
-  title: `About – ${person.name}`,
-  description: `Meet ${person.name}, ${person.role} from ${person.location}`,
+  title: `À propos – ${person.name}`,
+  description: `${person.role} basé à Rabat, Maroc. Java, Spring Boot, Kubernetes et livraison sécurisée.`,
   tableOfContent: {
     display: true,
     subItems: false,
@@ -107,136 +97,222 @@ const about: About = {
     display: true,
   },
   calendar: {
-    display: true,
-    link: "https://cal.com",
+    display: false,
+    link: "",
   },
   intro: {
     display: true,
     title: "Introduction",
     description: (
       <>
-        {person.firstName} is a {person.location.split("/")[1]?.replace("_", " ")}-based{" "}
-        {person.role.toLowerCase()} with a passion for transforming complex challenges into simple,
-        elegant design solutions. Their work spans digital interfaces, interactive experiences, and
-        the convergence of design and technology.
+        Je construis des plateformes backend et je les mets en production. Cela couvre tout le
+        chemin : le service Spring Boot et son modèle d'autorisation, le pipeline qui le teste et le
+        déploie, l'infrastructure sur laquelle il tourne, et les tableaux de bord qui prouvent qu'il
+        se porte bien. L'essentiel de mon travail tourne autour des systèmes multi-tenants et du
+        contrôle d'accès, où une erreur coûte cher et où « ça devrait aller » n'est pas une réponse.
       </>
     ),
   },
   work: {
-    display: true, // set to false to hide this section
-    title: "Work Experience",
+    display: true,
+    title: "Expérience professionnelle",
     experiences: [
       {
-        company: "FLY",
-        timeframe: "2022 - Present",
-        role: "Senior Design Engineer",
+        company: "SYNERTIC",
+        timeframe: "Juin – Août 2026",
+        role: "Stagiaire Ingénieur Backend & DevOps",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
-            engagement and 30% faster load times.
+            Conception de l'architecture d'autorisation d'une{" "}
+            <strong>plateforme SaaS multi-tenant</strong> en Java 21 et Spring Boot 4 — identité
+            déléguée à Keycloak, décisions de politique à Cerbos, RBAC et ABAC appliqués
+            conjointement et isolation stricte des tenants au niveau de l'API.
           </>,
           <>
-            Spearheaded the integration of AI tools into design workflows, enabling designers to
-            iterate 50% faster.
+            Mise en place de la chaîne CI/CD GitLab de bout en bout : builds d'images avec Kaniko,
+            analyse de vulnérabilités avec Trivy, déploiement automatisé et tâches de maintenance
+            planifiées, avec <strong>729 tests</strong> exécutés à chaque pipeline.
+          </>,
+          <>
+            Déploiement et exploitation de la plateforme conteneurisée sur Oracle Cloud avec
+            Prometheus, Grafana et Loki, et automatisation du déploiement, des sauvegardes et des
+            alertes avec Ansible. Charge validée à <strong>186 requêtes par seconde</strong> pour
+            une latence <strong>p95 de 79 ms</strong>.
+          </>,
+          <>
+            Publication de <strong>5 SDK clients</strong> — TypeScript, Python, Java, .NET et Go —
+            validés par une suite de conformité partagée garantissant un comportement identique dans
+            chaque langage d'une version à l'autre. Deux applications clientes sont passées en
+            production avec ces SDK.
+          </>,
+          <>
+            Développement de la console d'administration en React et TypeScript, incluant un éditeur
+            visuel de workflows d'approbation BPMN (bpmn-js sur un moteur Flowable) relié au moteur
+            de workflow backend.
           </>,
         ],
-        images: [
-          // optional: leave the array empty if you don't want to display images
-          {
-            src: "/images/projects/project-01/cover-01.jpg",
-            alt: "Once UI Project",
-            width: 16,
-            height: 9,
-          },
-        ],
+        images: [],
       },
       {
-        company: "Creativ3",
-        timeframe: "2018 - 2022",
-        role: "Lead Designer",
+        company: "Startup en amorçage (France, à distance)",
+        timeframe: "Juillet – Août 2025",
+        role: "Stagiaire Développeur Full Stack",
         achievements: [
           <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
+            Développement d'un <strong>module Campaign sécurisé</strong> — plus de 8 endpoints REST
+            en NestJS, Prisma et MongoDB — couvrant la gestion des statuts, les workflows métier et
+            la sécurisation de l'API par jetons JWT d'accès et de rafraîchissement.
           </>,
-          <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
-          </>,
+          <>Travail dans un workflow Git collaboratif, avec revue de code sur chaque changement.</>,
         ],
         images: [],
       },
     ],
   },
   studies: {
-    display: true, // set to false to hide this section
-    title: "Studies",
+    display: true,
+    title: "Formation & certification",
     institutions: [
       {
-        name: "University of Jakarta",
-        description: <>Studied software engineering.</>,
+        name: "INPT — Institut National des Postes et Télécommunications, Rabat",
+        description: (
+          <>
+            Cycle ingénieur en Systèmes Ubiquitaires et Distribués, spécialité Cloud & IoT. 2024 –
+            2027.
+          </>
+        ),
       },
       {
-        name: "Build the Future",
-        description: <>Studied online marketing and personal branding.</>,
+        name: "CPGE Ibn Timiya, Marrakech",
+        description: (
+          <>
+            Classes préparatoires aux grandes écoles, filière mathématiques et physique (MPSI / MP).
+            2022 – 2024.
+          </>
+        ),
+      },
+      {
+        name: "Oracle Cloud Infrastructure Foundations Associate",
+        description: (
+          <>
+            Certifié en octobre 2025 —{" "}
+            <SmartLink href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=18405CC30BE250C13C15C4FC2452776928715E42D1CDFC6B37C4B761F37C04A4">
+              vérifier le badge
+            </SmartLink>
+            .
+          </>
+        ),
       },
     ],
   },
   technical: {
-    display: true, // set to false to hide this section
-    title: "Technical skills",
+    display: true,
+    title: "Compétences techniques",
     skills: [
       {
-        title: "Figma",
-        description: <>Able to prototype in Figma with Once UI with unnatural speed.</>,
+        title: "Backend & API",
+        description: (
+          <>
+            Java 21 et Spring Boot pour des services qui doivent rester corrects sous charge —
+            Spring Security en resource server OAuth2, Hibernate et JPA, migrations Flyway, Spring
+            Cloud Gateway. REST avec OpenAPI, ainsi que gRPC et NestJS lorsqu'ils conviennent mieux.
+          </>
+        ),
         tags: [
-          {
-            name: "Figma",
-            icon: "figma",
-          },
+          { name: "Java 21", icon: "java" },
+          { name: "Spring Boot", icon: "spring" },
+          { name: "PostgreSQL", icon: "postgresql" },
+          { name: "NestJS", icon: "nestjs" },
+          { name: "Node.js", icon: "nodejs" },
         ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-02.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
-          {
-            src: "/images/projects/project-01/cover-03.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
-        ],
+        images: [],
       },
       {
-        title: "Next.js",
-        description: <>Building next gen apps with Next.js + Once UI + Supabase.</>,
+        title: "Identité & autorisation",
+        description: (
+          <>
+            La partie que la plupart des équipes ratent. Keycloak pour l'identité, Cerbos comme
+            point de décision de politique, OAuth2 Authorization Code avec PKCE, et RBAC combiné à
+            ABAC. Isolation multi-tenant et conception fail-closed : face à une requête ambiguë, la
+            réponse par défaut est « non ».
+          </>
+        ),
         tags: [
-          {
-            name: "JavaScript",
-            icon: "javascript",
-          },
-          {
-            name: "Next.js",
-            icon: "nextjs",
-          },
-          {
-            name: "Supabase",
-            icon: "supabase",
-          },
+          { name: "Keycloak", icon: "keycloak" },
+          { name: "OAuth2 / OIDC", icon: "security" },
+          { name: "RBAC + ABAC", icon: "security" },
         ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-04.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
+        images: [],
+      },
+      {
+        title: "Cloud & infrastructure",
+        description: (
+          <>
+            Conteneurs et orchestration en conditions réelles : Docker, Kubernetes, Helm, Argo CD
+            pour le GitOps et Istio pour un service mesh en TLS mutuel. Infrastructure décrite en
+            code avec Terraform sur AWS EKS et RDS, et Ansible pour la configuration. Certifié
+            Oracle Cloud.
+          </>
+        ),
+        tags: [
+          { name: "Kubernetes", icon: "kubernetes" },
+          { name: "Docker", icon: "docker" },
+          { name: "Terraform", icon: "terraform" },
+          { name: "AWS", icon: "aws" },
+          { name: "Argo CD", icon: "argocd" },
+          { name: "Istio", icon: "istio" },
         ],
+        images: [],
+      },
+      {
+        title: "CI/CD & DevSecOps",
+        description: (
+          <>
+            Des pipelines qui refusent de livrer du code cassé ou vulnérable : détection de secrets
+            avec Gitleaks, analyse statique avec SonarQube, scan de conteneurs avec Trivy et tests
+            dynamiques avec OWASP ZAP, secrets gérés via Sealed Secrets. Build, scan, déploiement —
+            dans cet ordre, à chaque fois.
+          </>
+        ),
+        tags: [
+          { name: "GitLab CI/CD", icon: "gitlab" },
+          { name: "SonarQube", icon: "sonarqube" },
+          { name: "Linux", icon: "linux" },
+        ],
+        images: [],
+      },
+      {
+        title: "Observabilité & tests",
+        description: (
+          <>
+            Prometheus, Grafana, Loki, Promtail et Alertmanager — la stack qui m'a permis de
+            diagnostiquer une véritable surcharge de cluster au lieu de la deviner. Tests de charge
+            avec k6, suites JUnit et Vitest intégrées à la CI pour que les régressions apparaissent
+            avant un déploiement, pas après.
+          </>
+        ),
+        tags: [
+          { name: "Prometheus", icon: "prometheus" },
+          { name: "Grafana", icon: "grafana" },
+        ],
+        images: [],
+      },
+      {
+        title: "Frontend",
+        description: (
+          <>
+            Assez de React pour construire l'interface que mérite un backend : React 19 et
+            TypeScript avec TanStack Query pour l'état serveur, Vite et Tailwind. Récemment, une
+            interface d'administration à sept rôles où chaque rôle voit une application réellement
+            différente.
+          </>
+        ),
+        tags: [
+          { name: "React", icon: "react" },
+          { name: "TypeScript", icon: "typescript" },
+          { name: "Tailwind", icon: "tailwind" },
+        ],
+        images: [],
       },
     ],
   },
@@ -245,70 +321,25 @@ const about: About = {
 const blog: Blog = {
   path: "/blog",
   label: "Blog",
-  title: "Writing about design and tech...",
-  description: `Read what ${person.name} has been up to recently`,
-  // Create new blog posts by adding a new .mdx file to app/blog/posts
-  // All posts will be listed on the /blog route
+  title: "Articles sur le backend et l'infrastructure",
+  description: `Les publications récentes de ${person.name}`,
 };
 
 const work: Work = {
   path: "/work",
   label: "Projets",
-  title: `Projects – ${person.name}`,
-  description: `Design and dev projects by ${person.name}`,
-  // Create new project pages by adding a new .mdx file to app/blog/posts
-  // All projects will be listed on the /home and /work routes
+  title: `Projets – ${person.name}`,
+  description: `Projets backend, cloud et plateforme réalisés par ${person.name}`,
 };
 
 const gallery: Gallery = {
   path: "/gallery",
   label: "Galerie",
-  title: `Photo gallery – ${person.name}`,
-  description: `A photo collection by ${person.name}`,
-  // Images by https://lorant.one
-  // These are placeholder images, replace with your own
-  images: [
-    {
-      src: "/images/gallery/horizontal-1.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-4.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-3.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-1.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/vertical-2.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-2.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/horizontal-4.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-3.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-  ],
+  title: `Architecture & tableaux de bord – ${person.name}`,
+  description: "Schémas d'architecture, pipelines et tableaux de bord issus de mes projets",
+  // En attente des visuels réels : schémas d'architecture, tableaux de bord
+  // Grafana, captures de pipelines. La route reste désactivée jusque-là.
+  images: [],
 };
 
 const contact: Contact = {
