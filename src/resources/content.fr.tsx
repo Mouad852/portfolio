@@ -6,6 +6,7 @@ import type {
   Home,
   Newsletter,
   Person,
+  Services,
   Social,
   Work,
 } from "@/types";
@@ -78,8 +79,9 @@ const home: Home = {
   },
   subline: (
     <>
-      Je suis {person.firstName}. Je conçois des systèmes multi-tenants sécurisés — de la couche
-      d'autorisation jusqu'au pipeline qui les met en production.
+      Je suis {person.firstName}. Je construis des applications web de bout en bout — l'interface,
+      le backend qui la sert, et le pipeline qui les met en production. D'une simple API à une
+      plateforme multi-tenant sécurisée.
     </>
   ),
 };
@@ -97,7 +99,9 @@ const about: About = {
     display: true,
   },
   resume: {
-    display: true,
+    // Off until the French PDF is compiled (flip \englishtrue in
+    // cv/CV_Mouad_Chaouni.tex) - otherwise the button links to a 404.
+    display: false,
     label: "Télécharger le CV",
     url: "/cv/Mouad_Chaouni_CV_FR.pdf",
   },
@@ -233,6 +237,23 @@ const about: About = {
         images: [],
       },
       {
+        title: "Frontend",
+        description: (
+          <>
+            Assez de React pour construire l'interface que mérite un backend : React 19 et
+            TypeScript avec TanStack Query pour l'état serveur, Vite et Tailwind. Récemment, une
+            interface d'administration à sept rôles où chaque rôle voit une application réellement
+            différente.
+          </>
+        ),
+        tags: [
+          { name: "React", icon: "react" },
+          { name: "TypeScript", icon: "typescript" },
+          { name: "Tailwind", icon: "tailwind" },
+        ],
+        images: [],
+      },
+      {
         title: "Identité & autorisation",
         description: (
           <>
@@ -299,23 +320,6 @@ const about: About = {
         tags: [
           { name: "Prometheus", icon: "prometheus" },
           { name: "Grafana", icon: "grafana" },
-        ],
-        images: [],
-      },
-      {
-        title: "Frontend",
-        description: (
-          <>
-            Assez de React pour construire l'interface que mérite un backend : React 19 et
-            TypeScript avec TanStack Query pour l'état serveur, Vite et Tailwind. Récemment, une
-            interface d'administration à sept rôles où chaque rôle voit une application réellement
-            différente.
-          </>
-        ),
-        tags: [
-          { name: "React", icon: "react" },
-          { name: "TypeScript", icon: "typescript" },
-          { name: "Tailwind", icon: "tailwind" },
         ],
         images: [],
       },
@@ -407,6 +411,7 @@ const contact: Contact = {
         { value: "backend", label: "Développement backend / API" },
         { value: "cloud", label: "Cloud & DevOps" },
         { value: "platform", label: "Une plateforme complète, de bout en bout" },
+        { value: "smaller", label: "Un site web ou un projet plus court" },
         { value: "unsure", label: "Pas encore sûr — discutons-en" },
       ],
     },
@@ -433,4 +438,60 @@ const contact: Contact = {
   },
 };
 
-export { person, social, newsletter, home, about, blog, work, gallery, contact };
+const services: Services = {
+  display: true,
+  title: <>Ce que je peux construire pour vous</>,
+  description: (
+    <>
+      L'essentiel de mon travail concerne le backend et l'infrastructure, mais je livre aussi
+      l'interface — et aucun projet n'est trop petit pour en parler.
+    </>
+  ),
+  items: [
+    {
+      icon: "spring",
+      title: "Backend & API",
+      description: (
+        <>
+          Java et Spring Boot, ou NestJS et Node. Des API REST avec une authentification correcte,
+          un schéma de base de données encore compréhensible dans un an, et des tests qui rattrapent
+          les régressions avant vos utilisateurs.
+        </>
+      ),
+    },
+    {
+      icon: "react",
+      title: "Applications web, de bout en bout",
+      description: (
+        <>
+          L'interface React et le backend qui la sert, conçus ensemble. Récemment, un système de
+          clinique à sept rôles où chaque rôle dispose d'une application réellement différente, et
+          non du même écran avec des boutons masqués.
+        </>
+      ),
+    },
+    {
+      icon: "kubernetes",
+      title: "Cloud, CI/CD & déploiement",
+      description: (
+        <>
+          Mettre en ligne et y rester : conteneurs, pipeline qui teste et déploie à chaque push,
+          infrastructure as code, et tableaux de bord qui vous alertent avant vos clients.
+        </>
+      ),
+    },
+    {
+      icon: "rocket",
+      title: "Projets plus courts",
+      description: (
+        <>
+          Une landing page, un site, une intégration entre deux systèmes, un bug que personne
+          n'arrive à cerner, ou un déploiement qui casse sans arrêt. Les petits projets sont les
+          bienvenus — dites-moi simplement ce qu'il vous faut.
+        </>
+      ),
+    },
+  ],
+};
+
+export { person, social, newsletter, home, about, blog, work, gallery, services, contact };

@@ -9,4 +9,5 @@ export { ScrollToHash } from "@/components/ScrollToHash";
 export { ThemeToggle } from "@/components/ThemeToggle";
 export { LanguageSwitcher } from "@/components/LanguageSwitcher";
 export { ContactForm } from "@/components/ContactForm";
+export { Services } from "@/components/Services";
 export { CustomMDX } from "@/components/mdx";

@@ -312,3 +312,27 @@ export type Contact = {
     phone: string;
   };
 };
+
+/**
+ * What a client can actually hire you for.
+ * @description The Work section is evidence of what has been built; this is the
+ * menu. It exists so the range is explicit — a visitor with a small job should
+ * be able to see that it is welcome, without the positioning being written down
+ * to the smallest thing on offer.
+ */
+export type Services = {
+  /** Whether to display the section */
+  display: boolean;
+  /** Section heading */
+  title: React.ReactNode;
+  /** One line under the heading */
+  description: React.ReactNode;
+  items: Array<{
+    /** Icon from "src/resources/icons.ts" */
+    icon: IconName;
+    /** Short name of the offer */
+    title: string;
+    /** What it covers, in a sentence or two */
+    description: React.ReactNode;
+  }>;
+};

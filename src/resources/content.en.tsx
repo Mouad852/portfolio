@@ -6,6 +6,7 @@ import type {
   Home,
   Newsletter,
   Person,
+  Services,
   Social,
   Work,
 } from "@/types";
@@ -77,8 +78,9 @@ const home: Home = {
   },
   subline: (
     <>
-      I'm {person.firstName}. I build secure, multi-tenant systems — from the authorization layer to
-      the pipeline that ships them.
+      I'm {person.firstName}. I build web applications end to end — the interface, the backend
+      behind it, and the pipeline that ships them. From a single API to a secure multi-tenant
+      platform.
     </>
   ),
 };
@@ -230,6 +232,22 @@ const about: About = {
         images: [],
       },
       {
+        title: "Frontend",
+        description: (
+          <>
+            Enough React to build the interface a backend deserves: React 19 and TypeScript with
+            TanStack Query for server state, Vite, and Tailwind. Recently a seven-role admin
+            interface where every role sees a genuinely different application.
+          </>
+        ),
+        tags: [
+          { name: "React", icon: "react" },
+          { name: "TypeScript", icon: "typescript" },
+          { name: "Tailwind", icon: "tailwind" },
+        ],
+        images: [],
+      },
+      {
         title: "Identity & authorization",
         description: (
           <>
@@ -293,22 +311,6 @@ const about: About = {
         tags: [
           { name: "Prometheus", icon: "prometheus" },
           { name: "Grafana", icon: "grafana" },
-        ],
-        images: [],
-      },
-      {
-        title: "Frontend",
-        description: (
-          <>
-            Enough React to build the interface a backend deserves: React 19 and TypeScript with
-            TanStack Query for server state, Vite, and Tailwind. Recently a seven-role admin
-            interface where every role sees a genuinely different application.
-          </>
-        ),
-        tags: [
-          { name: "React", icon: "react" },
-          { name: "TypeScript", icon: "typescript" },
-          { name: "Tailwind", icon: "tailwind" },
         ],
         images: [],
       },
@@ -397,6 +399,7 @@ const contact: Contact = {
         { value: "backend", label: "Backend / API development" },
         { value: "cloud", label: "Cloud & DevOps" },
         { value: "platform", label: "A full platform, end to end" },
+        { value: "smaller", label: "A website or something smaller" },
         { value: "unsure", label: "Not sure yet — let's talk" },
       ],
     },
@@ -422,4 +425,60 @@ const contact: Contact = {
   },
 };
 
-export { person, social, newsletter, home, about, blog, work, gallery, contact };
+const services: Services = {
+  display: true,
+  title: <>What I can build for you</>,
+  description: (
+    <>
+      Most of my work is backend and infrastructure, but I deliver the interface too — and no job is
+      too small to ask about.
+    </>
+  ),
+  items: [
+    {
+      icon: "spring",
+      title: "Backend & APIs",
+      description: (
+        <>
+          Java and Spring Boot, or NestJS and Node. REST APIs with proper authentication, a database
+          schema that will still make sense in a year, and tests that catch regressions before your
+          users do.
+        </>
+      ),
+    },
+    {
+      icon: "react",
+      title: "Web apps, end to end",
+      description: (
+        <>
+          The React interface and the backend behind it, built together. Recently a seven-role
+          clinic system where every role gets a genuinely different application — not the same
+          screen with buttons hidden.
+        </>
+      ),
+    },
+    {
+      icon: "kubernetes",
+      title: "Cloud, CI/CD & deployment",
+      description: (
+        <>
+          Getting it live and keeping it there: containers, a pipeline that tests and ships on every
+          push, infrastructure as code, and dashboards that tell you it is healthy before a customer
+          does.
+        </>
+      ),
+    },
+    {
+      icon: "rocket",
+      title: "Smaller builds",
+      description: (
+        <>
+          A landing page, a site, an integration between two systems, a bug nobody can pin down, or
+          a deployment that keeps breaking. Short jobs are welcome — just say what you need.
+        </>
+      ),
+    },
+  ],
+};
+
+export { person, social, newsletter, home, about, blog, work, gallery, services, contact };
