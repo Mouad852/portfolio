@@ -70,15 +70,17 @@ const fonts: FontsConfig = {
 
 // default customization applied to the HTML in the main layout.tsx
 const style: StyleConfig = {
+  // Respect the visitor's OS preference rather than forcing a mood on them.
+  // Both modes are designed and QA'd.
   theme: "system", // dark | light | system
-  neutral: "gray", // sand | gray | slate | mint | rose | dusk | custom
-  brand: "cyan", // blue | indigo | violet | magenta | pink | red | orange | yellow | moss | green | emerald | aqua | cyan | custom
-  accent: "red", // blue | indigo | violet | magenta | pink | red | orange | yellow | moss | green | emerald | aqua | cyan | custom
-  solid: "contrast", // color | contrast
-  solidStyle: "flat", // flat | plastic
-  border: "playful", // rounded | playful | conservative | sharp
-  surface: "translucent", // filled | translucent
-  transition: "all", // all | micro | macro
+  neutral: "slate", // cool and professional without going cold
+  brand: "indigo", // trust colour for a buyer evaluating reliability
+  accent: "emerald", // "measured / healthy" — carries the metrics motif
+  solid: "contrast", // guarantees AA contrast on solid controls
+  solidStyle: "flat", // plastic reads glossy and dated
+  border: "conservative", // calm radius; playful reads consumer, sharp reads brutalist
+  surface: "filled", // translucent is glassmorphism — wrong signal for this work
+  transition: "micro", // motion only where it aids comprehension
   scaling: "100", // 90 | 95 | 100 | 105 | 110
 };
 
@@ -115,17 +117,19 @@ const effects: EffectsConfig = {
     colorEnd: "page-background",
   },
   dots: {
-    display: true,
+    display: false,
     opacity: 40,
     size: "2",
     color: "brand-background-strong",
   },
+  // A faint schematic grid: texture that suits infrastructure work without
+  // becoming visual noise behind the content.
   grid: {
-    display: false,
-    opacity: 100,
-    color: "neutral-alpha-medium",
-    width: "0.25rem",
-    height: "0.25rem",
+    display: true,
+    opacity: 30,
+    color: "neutral-alpha-weak",
+    width: "2rem",
+    height: "2rem",
   },
   lines: {
     display: false,
