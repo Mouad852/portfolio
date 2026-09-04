@@ -13,29 +13,63 @@ import {
   RevealFx,
   SpacingToken,
 } from "@once-ui-system/core";
-import { Footer, Header, RouteGuard, Providers } from "@/components";
-import { baseURL, effects, fonts, style, dataStyle, home, person } from "@/resources";
+import { notFound } from "next/navigation";
 
-export async function generateMetadata() {
-  return Meta.generate({
-    title: home.title,
-    description: home.description,
-    baseURL: baseURL,
-    path: home.path,
-    image: home.image,
-  });
+import { Footer, Header, RouteGuard, Providers } from "@/components";
+import {
+  baseURL,
+  effects,
+  fonts,
+  style,
+  dataStyle,
+  getContent,
+  isLocale,
+  locales,
+  localePath,
+} from "@/resources";
+
+type LocaleParams = { params: Promise<{ locale: string }> };
+
+export async function generateStaticParams() {
+  return locales.map((locale) => ({ locale }));
+}
+
+export async function generateMetadata({ params }: LocaleParams) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
+  const { home } = getContent(locale);
+
+  return {
+    ...Meta.generate({
+      title: home.title,
+      description: home.description,
+      baseURL: baseURL,
+      path: localePath(locale, home.path),
+      image: home.image,
+    }),
+    // hreflang: tell search engines the two locales are the same page.
+    alternates: {
+      canonical: `${baseURL}${localePath(locale, home.path)}`,
+      languages: Object.fromEntries(
+        locales.map((l) => [l, `${baseURL}${localePath(l, home.path)}`]),
+      ),
+    },
+  };
 }
 
 export default async function RootLayout({
   children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+  params,
+}: Readonly<{ children: React.ReactNode }> & LocaleParams) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
   return (
     <Flex
       suppressHydrationWarning
       as="html"
-      lang={person.locale ?? "en"}
+      lang={locale}
       fillWidth
       className={classNames(
         fonts.heading.variable,

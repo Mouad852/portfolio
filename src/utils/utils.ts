@@ -22,10 +22,13 @@ type Metadata = {
 };
 
 import { notFound } from "next/navigation";
+import type { Locale } from "@/resources/i18n";
 
 function getMDXFiles(dir: string) {
+  // A locale whose content has not been written yet simply has no directory.
+  // Return an empty list so that locale renders an empty state instead of 404.
   if (!fs.existsSync(dir)) {
-    notFound();
+    return [];
   }
 
   return fs.readdirSync(dir).filter((file) => path.extname(file) === ".mdx");
@@ -71,4 +74,9 @@ function getMDXData(dir: string) {
 export function getPosts(customPath = ["", "", "", ""]) {
   const postsDir = path.join(process.cwd(), ...customPath);
   return getMDXData(postsDir);
+}
+
+/** Project case studies for a locale, read from work/projects/<locale>. */
+export function getProjects(locale: Locale) {
+  return getPosts(["src", "app", "[locale]", "work", "projects", locale]);
 }
