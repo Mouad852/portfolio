@@ -127,6 +127,15 @@ export interface About extends BasePageConfig {
     display: boolean;
   };
   /** Calendar section configuration */
+  /** Downloadable CV, served from public/ */
+  resume: {
+    /** Whether to show the download button */
+    display: boolean;
+    /** Button label */
+    label: string;
+    /** Path under public/, e.g. "/cv/Mouad_Chaouni_CV_EN.pdf" */
+    url: string;
+  };
   calendar: {
     /** Whether to display the calendar */
     display: boolean;

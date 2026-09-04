@@ -96,6 +96,11 @@ const about: About = {
   avatar: {
     display: true,
   },
+  resume: {
+    display: true,
+    label: "Télécharger le CV",
+    url: "/cv/Mouad_Chaouni_CV_FR.pdf",
+  },
   calendar: {
     display: false,
     link: "",
