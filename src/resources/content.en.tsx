@@ -17,7 +17,7 @@ const person: Person = {
   lastName: "Chaouni",
   name: "Mouad Chaouni",
   role: "Backend & Platform Engineer",
-  avatar: "/images/avatar.jpg",
+  avatar: "/images/mouad-chaouni.jpg",
   email: "mdchaouni@gmail.com",
   location: "Africa/Casablanca", // IANA time zone identifier
   languages: ["Arabic", "French", "English"],

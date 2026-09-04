@@ -20,7 +20,7 @@ const person: Person = {
   // equivalent, while "Cloud" is the term the French and Moroccan markets
   // actually search for — and it matches the wording of the French CV.
   role: "Ingénieur Backend & Cloud",
-  avatar: "/images/avatar.jpg",
+  avatar: "/images/mouad-chaouni.jpg",
   email: "mdchaouni@gmail.com",
   location: "Africa/Casablanca", // identifiant de fuseau horaire IANA
   languages: ["Arabe", "Français", "Anglais"],
@@ -99,9 +99,7 @@ const about: About = {
     display: true,
   },
   resume: {
-    // Off until the French PDF is compiled (flip \englishtrue in
-    // cv/CV_Mouad_Chaouni.tex) - otherwise the button links to a 404.
-    display: false,
+    display: true,
     label: "Télécharger le CV",
     url: "/cv/Mouad_Chaouni_CV_FR.pdf",
   },
