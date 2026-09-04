@@ -6,7 +6,7 @@
 //
 // Translate the user-facing strings in place; keep every key.
 
-import { About, Blog, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
+import { About, Blog, Contact, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
 import { Line, Row, Text } from "@once-ui-system/core";
 
 const person: Person = {
@@ -22,7 +22,7 @@ const person: Person = {
 };
 
 const newsletter: Newsletter = {
-  display: true,
+  display: false,
   title: <>Subscribe to {person.firstName}'s Newsletter</>,
   description: <>My weekly newsletter about creativity and engineering</>,
 };
@@ -86,7 +86,10 @@ const home: Home = {
   subline: (
     <>
       I'm {person.firstName}, a {person.role.toLowerCase()} at{" "}
-      <Text as="span" size="xl" weight="strong">ONCE UI</Text>, where I craft intuitive <br /> user experiences. After hours, I build my own projects.
+      <Text as="span" size="xl" weight="strong">
+        ONCE UI
+      </Text>
+      , where I craft intuitive <br /> user experiences. After hours, I build my own projects.
     </>
   ),
 };
@@ -112,9 +115,10 @@ const about: About = {
     title: "Introduction",
     description: (
       <>
-        {person.firstName} is a {person.location.split("/")[1]?.replace("_", " ")}-based {person.role.toLowerCase()} with a passion for transforming complex challenges
-        into simple, elegant design solutions. Their work spans digital interfaces, interactive
-        experiences, and the convergence of design and technology.
+        {person.firstName} is a {person.location.split("/")[1]?.replace("_", " ")}-based{" "}
+        {person.role.toLowerCase()} with a passion for transforming complex challenges into simple,
+        elegant design solutions. Their work spans digital interfaces, interactive experiences, and
+        the convergence of design and technology.
       </>
     ),
   },
@@ -184,9 +188,7 @@ const about: About = {
     skills: [
       {
         title: "Figma",
-        description: (
-          <>Able to prototype in Figma with Once UI with unnatural speed.</>
-        ),
+        description: <>Able to prototype in Figma with Once UI with unnatural speed.</>,
         tags: [
           {
             name: "Figma",
@@ -211,9 +213,7 @@ const about: About = {
       },
       {
         title: "Next.js",
-        description: (
-          <>Building next gen apps with Next.js + Once UI + Supabase.</>
-        ),
+        description: <>Building next gen apps with Next.js + Once UI + Supabase.</>,
         tags: [
           {
             name: "JavaScript",
@@ -311,4 +311,90 @@ const gallery: Gallery = {
   ],
 };
 
-export { person, social, newsletter, home, about, blog, work, gallery };
+const contact: Contact = {
+  display: true,
+  id: "contact",
+  title: <>Démarrer un projet</>,
+  description: (
+    <>
+      Dites-moi ce dont vous avez besoin et par quel moyen vous préférez être recontacté. Je réponds
+      généralement sous 24 heures.
+    </>
+  ),
+  fields: {
+    name: { label: "Votre nom", placeholder: "Jean Dupont" },
+    channel: {
+      label: "Comment vous joindre ?",
+      options: [
+        {
+          value: "email",
+          label: "E-mail",
+          icon: "email",
+          placeholder: "vous@entreprise.com",
+          inputType: "email",
+        },
+        {
+          value: "phone",
+          label: "Téléphone",
+          icon: "phone",
+          placeholder: "+212 6 00 00 00 00",
+          inputType: "tel",
+        },
+        {
+          value: "whatsapp",
+          label: "WhatsApp",
+          icon: "whatsapp",
+          placeholder: "+212 6 00 00 00 00",
+          inputType: "tel",
+        },
+        {
+          value: "linkedin",
+          label: "LinkedIn",
+          icon: "linkedin",
+          placeholder: "linkedin.com/in/votre-profil",
+          inputType: "url",
+        },
+        {
+          value: "other",
+          label: "Autre",
+          icon: "message",
+          placeholder: "Telegram, Discord — comme vous préférez",
+          inputType: "text",
+        },
+      ],
+    },
+    detail: { label: "Où puis-je vous joindre ?" },
+    need: {
+      label: "De quoi avez-vous besoin ?",
+      placeholder: "Choisissez le plus proche",
+      options: [
+        { value: "backend", label: "Développement backend / API" },
+        { value: "cloud", label: "Cloud & DevOps" },
+        { value: "platform", label: "Une plateforme complète, de bout en bout" },
+        { value: "unsure", label: "Pas encore sûr — discutons-en" },
+      ],
+    },
+    message: {
+      label: "Parlez-moi du projet",
+      placeholder:
+        "Quelques phrases suffisent. Que construisez-vous, et qu'est-ce qui vous bloque ?",
+    },
+  },
+  submit: "Envoyer",
+  sending: "Envoi…",
+  success: {
+    title: "Message envoyé",
+    description: "Merci — je l'ai bien reçu et je vous réponds sur le canal que vous avez choisi.",
+  },
+  error: {
+    title: "L'envoi a échoué",
+    description: "Quelque chose s'est cassé en chemin. Réessayez, ou écrivez-moi directement.",
+  },
+  validation: {
+    required: "Ce champ est obligatoire",
+    email: "Cela ne ressemble pas à une adresse e-mail",
+    phone: "Cela ne ressemble pas à un numéro de téléphone",
+  },
+};
+
+export { person, social, newsletter, home, about, blog, work, gallery, contact };

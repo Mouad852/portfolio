@@ -13,7 +13,7 @@ import {
 } from "@once-ui-system/core";
 import { notFound } from "next/navigation";
 import { baseURL, getContent, isLocale, localePath } from "@/resources";
-import { Mailchimp } from "@/components";
+import { ContactForm } from "@/components";
 import { Projects } from "@/components/work/Projects";
 
 type LocaleParams = { params: Promise<{ locale: string }> };
@@ -114,7 +114,7 @@ export default async function Home({ params }: LocaleParams) {
         <Projects locale={locale} range={[1, 1]} />
       </RevealFx>
       <Projects locale={locale} range={[2]} />
-      <Mailchimp />
+      <ContactForm locale={locale} />
     </Column>
   );
 }

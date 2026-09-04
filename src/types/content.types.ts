@@ -244,3 +244,62 @@ export interface Gallery extends BasePageConfig {
     orientation: string;
   }>;
 }
+
+/**
+ * A way a prospective client can be contacted back.
+ * @description Drives the segmented control on the contact form. Picking a
+ * channel reshapes the single detail input rather than showing one field per
+ * channel, so nobody is asked for an email address just to send a message.
+ */
+export type ContactChannel = {
+  /** Stable key submitted with the form (email, phone, whatsapp, …) */
+  value: string;
+  /** Visible label on the segmented control */
+  label: string;
+  /** Icon from "src/resources/icons.ts" */
+  icon: IconName;
+  /** Placeholder for the detail input when this channel is selected */
+  placeholder: string;
+  /** HTML input type the detail field takes for this channel */
+  inputType: "email" | "tel" | "url" | "text";
+};
+
+/**
+ * Contact form configuration.
+ * @description Five questions, hard cap — every extra field costs completions.
+ */
+export type Contact = {
+  /** Whether to display the contact section */
+  display: boolean;
+  /** Anchor id used for deep links from calls to action */
+  id: string;
+  /** Section heading */
+  title: React.ReactNode;
+  /** Short line under the heading, setting expectations on reply time */
+  description: React.ReactNode;
+  fields: {
+    name: { label: string; placeholder: string };
+    channel: { label: string; options: ContactChannel[] };
+    /** Label for the adaptive detail input; the placeholder comes from the channel */
+    detail: { label: string };
+    need: {
+      label: string;
+      placeholder: string;
+      options: Array<{ value: string; label: string }>;
+    };
+    message: { label: string; placeholder: string };
+  };
+  /** Submit button, idle and in-flight */
+  submit: string;
+  sending: string;
+  /** Shown in place of the form once it has been sent */
+  success: { title: string; description: string };
+  /** Shown above the form if the request fails */
+  error: { title: string; description: string };
+  /** Client-side validation messages */
+  validation: {
+    required: string;
+    email: string;
+    phone: string;
+  };
+};

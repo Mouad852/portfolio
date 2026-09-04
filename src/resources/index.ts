@@ -29,6 +29,7 @@ export {
   blog,
   work,
   gallery,
+  contact,
 } from "./content.en";
 
 export {
