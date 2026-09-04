@@ -1,0 +1,71 @@
+---
+title: "Pitstop — GitOps, a service mesh, and a real incident"
+subtitle: "Kubernetes on AWS EKS with a DevSecOps pipeline, provisioned entirely as code"
+publishedAt: "2026-04-19"
+summary: "A microservices garage-management app taken from containers to a production-shaped Kubernetes platform: Argo CD, Istio mTLS, Terraform on EKS, and a four-stage security pipeline."
+tag: "Cloud & DevOps"
+images: []
+team: []
+link: "https://gitlab.com/pitstop-mouad-chaouni/pitstop-kubernetes"
+---
+
+The application is a garage-management system — customers, vehicles, workshop planning — built as
+microservices on Node.js, Vue, RabbitMQ and MySQL. That part is ordinary. **The platform it runs on
+is the project.**
+
+The infrastructure work lives on
+[GitLab](https://gitlab.com/pitstop-mouad-chaouni/pitstop-kubernetes); the application services are
+[on GitHub](https://github.com/Mouad852/pitstop-microservices-app).
+
+## Deployment as data, not as commands
+
+Orchestration on **Kubernetes**, delivered through **Argo CD** in a GitOps model: the cluster's
+desired state lives in Git, and Argo reconciles reality toward it. Nobody runs `kubectl apply` from
+a laptop, which means the answer to "what is deployed right now?" is a commit hash rather than a
+guess, and rolling back is a revert.
+
+## Zero trust inside the cluster
+
+An **Istio** service mesh with **mutual TLS** between every service, and authorization policies
+written against workload identity rather than network position. A pod that gets compromised cannot
+simply call whatever it likes — being inside the cluster grants nothing on its own. That is the
+whole point: the network perimeter is not a security boundary.
+
+Secrets are managed with **Sealed Secrets**, so encrypted secrets can live in Git safely and only
+the cluster can decrypt them.
+
+## A pipeline that refuses bad code
+
+Four gates, in the order that catches problems cheapest first:
+
+| Stage | Tool | Catches |
+|---|---|---|
+| Secrets | **Gitleaks** | Credentials committed by accident |
+| Static analysis | **SonarQube** | Code-level vulnerabilities before build |
+| Containers | **Trivy** | Known CVEs in image layers |
+| Running app | **OWASP ZAP** | What only shows up against a live target |
+
+Secrets → build → scan → deploy. A failure at any gate stops the release.
+
+## Infrastructure as code
+
+**AWS EKS and RDS provisioned with Terraform**, including a cost guardrail — because a student
+account and an unbounded cluster is a story with a predictable and expensive ending. The
+environment is reproducible from the repository rather than from memory.
+
+## The part I did not plan
+
+Prometheus, Grafana and Loki went in for completeness. Then the cluster fell over under load.
+
+Having the observability stack already running turned that from a mystery into an investigation: the
+metrics showed where saturation started, the logs showed what happened next, and the fix followed
+from evidence instead of from restarting things until the symptom went away.
+
+**Diagnosing a real overload incident taught me more than building the pipeline did.** It is also
+the honest difference between having configured monitoring and having actually used it — most
+tutorials stop at the dashboard screenshot.
+
+## Stack
+
+Docker · Kubernetes · Argo CD · Istio · Terraform · AWS EKS/RDS · GitLab CI/CD · Gitleaks ·
+SonarQube · Trivy · OWASP ZAP · Sealed Secrets · Prometheus · Grafana · Loki

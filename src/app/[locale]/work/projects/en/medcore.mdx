@@ -1,0 +1,78 @@
+---
+title: "MedCore — a clinic platform with authorization that actually holds"
+subtitle: "Six domain microservices, seven roles, and a live demo you can click through"
+publishedAt: "2026-08-31"
+summary: "A full outpatient clinic system built on Spring Boot microservices and React, secured with Keycloak and a three-layer authorization model. 149 tests, 16 containers, and a hosted demo."
+tag: "Backend & platform"
+images: []
+team: []
+link: "https://myheart.mdchaouni.workers.dev"
+---
+
+## Try it before you read this
+
+**[myheart.mdchaouni.workers.dev](https://myheart.mdchaouni.workers.dev)** — the demo runs on
+in-memory fixtures, but it reproduces the parts that matter faithfully: authorization, record
+ownership, the appointment state machine, and writes that persist for your session. Sign in as a
+doctor and then as a receptionist; you are looking at two genuinely different applications.
+
+There is also a [full walkthrough on video](https://youtu.be/AJEzYZvm-dY), and the
+[source is on GitHub](https://github.com/Mouad852/MedCore).
+
+## The problem
+
+A clinic is not one application. A receptionist books and reschedules but must never see a
+diagnosis. A doctor writes prescriptions but has no business inside the billing ledger. A lab
+technician uploads results for requests assigned to them and nothing else. A patient sees exactly
+their own record and no one else's.
+
+Most systems model this as a single `role` column and a pile of `if` statements in the UI. That
+fails in the way security usually fails — quietly, and only for the person who finds the gap.
+
+## What I built
+
+Six domain microservices — patients, appointments, billing, prescriptions, lab, and users — behind
+a **Spring Cloud Gateway**, with Eureka for service discovery, OpenFeign for service-to-service
+calls, and Resilience4j circuit breakers so one slow service cannot take the rest down. Each
+service owns its own PostgreSQL database; nothing reaches across a schema boundary.
+
+Sixteen containers in total: eight services, seven databases, and Keycloak.
+
+### Authorization in three layers
+
+This is the part I care about, and the reason the project exists.
+
+**At the gateway**, role rules reject requests that have no business reaching a service at all — a
+receptionist's token never gets near the prescription API.
+
+**Inside each service**, the JWT is validated independently. A service does not trust that
+something upstream already checked; a request arriving by any other path is treated the same way.
+
+**At the record**, ownership is checked against the token's claims. Passing the first two layers
+gets you to the right endpoint — it does not get you someone else's chart. A doctor requesting a
+patient they are not assigned to is refused at the row, not at the route.
+
+Authentication runs on **Keycloak** with OpenID Connect, using the Authorization Code flow with
+PKCE. The defaults are deliberately fail-closed: an unclear request is denied, not allowed.
+
+### The frontend
+
+A **React** interface tailored to seven roles, with TanStack Query managing server state. Each role
+gets a different navigation, a different dashboard, and different affordances — not the same screen
+with buttons hidden by CSS. The hosted demo reproduces all of it without a backend, which is what
+makes the link at the top of this page worth clicking.
+
+## Results
+
+- **6 domain microservices**, 16 containers, database-per-service
+- **7 roles**, each with a genuinely distinct interface
+- **149 tests** — 92 Vitest on the frontend, 57 JUnit across three backend modules, covering
+  appointment lifecycle, booking rules, access control and payment status
+- A **live demo** anyone can open without installing anything
+
+## What I would do differently
+
+The three-layer model is right, but the gateway rules and the per-service rules are maintained
+separately, so adding a role means editing in two places. A shared policy service — the Cerbos
+approach I later used at SYNERTIC — would make the rules one artifact instead of two, and would
+make them testable on their own.

@@ -1,0 +1,51 @@
+---
+title: "MedReminder — reminders that have to arrive on time"
+subtitle: "Real-time notifications and scheduled jobs on NestJS, Socket.IO and Redis"
+publishedAt: "2026-01-17"
+summary: "A medication and appointment adherence app for patients managing chronic conditions, built around a job queue and websockets rather than a request/response loop."
+tag: "Backend & real-time"
+images: []
+team: []
+link: "https://github.com/Mouad852/MedReminder"
+---
+
+A full-stack app helping patients with chronic conditions keep up with their medication schedules
+and appointments. [Source on GitHub](https://github.com/Mouad852/MedReminder), with a
+[demo walkthrough on video](https://youtu.be/sdr5R-KdctQ).
+
+## Why this one is different
+
+My other projects answer requests. This one has to act **when nobody is asking** — a dose is due at
+8pm whether or not the patient has the app open, and an appointment reminder is worthless the day
+after.
+
+That inverts the architecture. The interesting problems stop being "how do I model this resource"
+and become scheduling, delivery, and what happens when the user is not there to receive it.
+
+## What I built
+
+**Scheduled work** runs through **Bull on Redis**. Reminders are queued jobs with a due time, not
+rows polled by a cron script — which means retries, backoff and failure handling come from the
+queue rather than from code I would have had to get right myself.
+
+**Live delivery** over **Socket.IO**, so a reminder reaches an open session immediately instead of
+waiting for the next poll or page load.
+
+**Email** as the fallback path, because the whole feature is worthless if it only works for users
+who happen to be looking at the screen.
+
+The backend is **NestJS with Prisma on MongoDB**, authentication is JWT via Passport, and the
+frontend is **React with Tailwind and Vite**. Everything runs under Docker Compose.
+
+## Features
+
+- Medication tracking with dosage schedules and daily reminders
+- Appointment booking by specialty, location and date, with reminders attached
+- A dashboard showing today's doses, upcoming appointments, and adherence over time
+- User registration, JWT authentication, profile management
+
+## What I took from it
+
+Queues change how you think about failure. In a request/response service, a failure has someone
+waiting for it and an obvious place to report it. A background job that fails at 8pm has neither —
+so retry policy, idempotency, and observability stop being nice-to-haves and become the design.

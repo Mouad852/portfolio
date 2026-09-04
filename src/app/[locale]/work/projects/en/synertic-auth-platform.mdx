@@ -1,0 +1,84 @@
+---
+title: "A multi-tenant authorization platform, in production"
+subtitle: "Backend, pipeline, infrastructure and five client SDKs — SYNERTIC, 2026"
+publishedAt: "2026-08-08"
+summary: "Designed the authorization architecture for a multi-tenant SaaS platform, built the CI/CD pipeline that ships it, and ran it on Oracle Cloud. 186 req/s at 79ms p95, 729 tests per pipeline."
+tag: "Production"
+images: []
+team: []
+---
+
+Two months at **SYNERTIC** in Casablanca, on the authorization service behind a multi-tenant SaaS
+platform. This is the only project on this site that carries real production traffic, so it is
+written up in the same detail as the rest even though the source is not mine to publish.
+
+## The problem
+
+Multi-tenancy makes authorization harder than it looks. It is not enough to know *who* someone is
+and *what role* they hold — you also need to know *which tenant's data* they are reaching for, and
+be certain that a request carrying a valid token for tenant A can never touch tenant B. Get it
+wrong once and the failure is not a bug report, it is a disclosure.
+
+The usual approach — permission checks scattered through service code — makes that guarantee
+impossible to audit. You cannot read a codebase and prove the rule holds everywhere.
+
+## What I built
+
+### Authorization as a separate concern
+
+Java 21 and **Spring Boot 4** on PostgreSQL, with the two hard problems deliberately delegated
+rather than reimplemented:
+
+- **Keycloak** owns identity — users, tenants, tokens, and the OIDC flows.
+- **Cerbos** owns policy decisions as a policy decision point, with rules written in CEL.
+
+The service asks "may this principal do this to this resource?" and enforces the answer. Because
+the policies live in one place as data rather than scattered as code, they can be read, reviewed
+and tested as a unit. **RBAC and ABAC run together** — role for the coarse question, attributes for
+the fine one — and tenant isolation is enforced at the API boundary rather than trusted to callers.
+
+The whole thing is fail-closed. An unclear request is denied.
+
+### The pipeline
+
+A **GitLab CI/CD** chain doing the work in the right order: Kaniko builds container images without
+a Docker daemon, Trivy scans them for known vulnerabilities, deployment is automated, and scheduled
+jobs handle maintenance. **729 tests run on every pipeline** — not as a badge, but because an
+authorization change that passes review and fails a test is exactly the change you want stopped.
+
+### Running it
+
+Deployed on an **Oracle Cloud** VM with Prometheus, Grafana and Loki for metrics, dashboards and
+logs, and **Ansible** automating deployment, backups and alerting so none of it depends on someone
+remembering.
+
+Then I measured it, because "it feels fast" is not a number: **186 requests per second at a 79 ms
+p95 latency** under load testing.
+
+### Five SDKs, one behaviour
+
+The platform's API is consumed from several languages, so I published clients for **TypeScript,
+Python, Java, .NET and Go**. The interesting part is not writing five clients — it is keeping them
+honest. A **shared conformance suite** runs the same scenarios against every SDK, so a behaviour
+change in one language cannot silently diverge from the others across releases.
+
+Two client applications went to production on them.
+
+### The admin console
+
+A **React and TypeScript** console for administering tenants and policies, including a visual BPMN
+editor for approval workflows built on bpmn-js and wired to a **Flowable** engine — so a non-engineer
+can draw an approval chain and have it actually execute.
+
+## Results
+
+- **186 req/s** at **79 ms p95** under load
+- **729 tests** on every pipeline run
+- **5 client SDKs** held to one behaviour by a shared conformance suite
+- **2 client applications** live in production
+
+## Why this one matters
+
+Everything else in my portfolio I could build again on a weekend. This one ran under real load, for
+real tenants, with real consequences for getting authorization wrong — and the numbers above are
+measured, not estimated.

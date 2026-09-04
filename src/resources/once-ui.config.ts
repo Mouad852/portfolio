@@ -20,7 +20,9 @@ const routes: RoutesConfig = {
   "/": true,
   "/about": true,
   "/work": true,
-  "/gallery": true,
+  // Off until real assets exist: architecture diagrams, Grafana dashboards,
+  // pipeline screenshots. Flip to true once public/images/gallery is populated.
+  "/gallery": false,
 };
 
 const display: DisplayConfig = {

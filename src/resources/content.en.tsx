@@ -1,16 +1,26 @@
-import { About, Blog, Contact, Gallery, Home, Newsletter, Person, Social, Work } from "@/types";
-import { Line, Row, Text } from "@once-ui-system/core";
+import type {
+  About,
+  Blog,
+  Contact,
+  Gallery,
+  Home,
+  Newsletter,
+  Person,
+  Social,
+  Work,
+} from "@/types";
+import { SmartLink, Text } from "@once-ui-system/core";
 
 const person: Person = {
-  firstName: "Selene",
-  lastName: "Yu",
-  name: `Selene Yu`,
-  role: "Design Engineer",
+  firstName: "Mouad",
+  lastName: "Chaouni",
+  name: "Mouad Chaouni",
+  role: "Backend & Platform Engineer",
   avatar: "/images/avatar.jpg",
-  email: "example@gmail.com",
-  location: "Asia/Jakarta", // Expecting the IANA time zone identifier, e.g., 'Europe/Vienna'
-  languages: ["English", "Bahasa"], // optional: Leave the array empty if you don't want to display languages
-  locale: "en", // BCP 47 language tag for the HTML lang attribute, e.g., 'en', 'ja', 'zh-TW'
+  email: "mdchaouni@gmail.com",
+  location: "Africa/Casablanca", // IANA time zone identifier
+  languages: ["Arabic", "French", "English"],
+  locale: "en", // BCP 47 language tag for the HTML lang attribute
 };
 
 const newsletter: Newsletter = {
@@ -20,32 +30,23 @@ const newsletter: Newsletter = {
 };
 
 const social: Social = [
-  // Links are automatically displayed.
-  // Import new icons in /once-ui/icons.ts
-  // Set essentials: true for links you want to show on the about page
   {
     name: "GitHub",
     icon: "github",
-    link: "https://github.com/once-ui-system",
+    link: "https://github.com/Mouad852",
     essential: true,
   },
   {
     name: "LinkedIn",
     icon: "linkedin",
-    link: "https://www.linkedin.com/company/once-ui/",
+    link: "https://www.linkedin.com/in/mouad-chaouni/",
     essential: true,
   },
   {
-    name: "Instagram",
-    icon: "instagram",
-    link: "https://www.instagram.com/once_ui/",
+    name: "GitLab",
+    icon: "gitlab",
+    link: "https://gitlab.com/pitstop-mouad-chaouni",
     essential: false,
-  },
-  {
-    name: "Threads",
-    icon: "threads",
-    link: "https://www.threads.com/@once_ui",
-    essential: true,
   },
   {
     name: "Email",
@@ -59,29 +60,25 @@ const home: Home = {
   path: "/",
   image: "/images/og/home.jpg",
   label: "Home",
-  title: `${person.name}'s Portfolio`,
-  description: `Portfolio website showcasing my work as a ${person.role}`,
-  headline: <>Building bridges between design and code</>,
+  title: `${person.name} — ${person.role}`,
+  // Where the searchable keywords live: the hero stays short, this carries the
+  // terms a client actually types into a search box.
+  description:
+    "Backend and platform engineer in Rabat, Morocco. I build secure, multi-tenant systems with Java and Spring Boot, and ship them on Kubernetes with CI/CD, observability and infrastructure as code.",
+  headline: <>Backend & Platform Engineer</>,
   featured: {
     display: true,
     title: (
-      <Row gap="12" vertical="center">
-        <strong className="ml-4">Once UI</strong>{" "}
-        <Line background="brand-alpha-strong" vert height="20" />
-        <Text marginRight="4" onBackground="brand-medium">
-          Featured work
-        </Text>
-      </Row>
+      <Text onBackground="brand-medium" marginRight="4">
+        <strong className="ml-4">MedCore</strong> — try the live demo
+      </Text>
     ),
-    href: "/work/building-once-ui-a-customizable-design-system",
+    href: "/work/medcore",
   },
   subline: (
     <>
-      I'm {person.firstName}, a {person.role.toLowerCase()} at{" "}
-      <Text as="span" size="xl" weight="strong">
-        ONCE UI
-      </Text>
-      , where I craft intuitive <br /> user experiences. After hours, I build my own projects.
+      I'm {person.firstName}. I build secure, multi-tenant systems — from the authorization layer to
+      the pipeline that ships them.
     </>
   ),
 };
@@ -90,7 +87,7 @@ const about: About = {
   path: "/about",
   label: "About",
   title: `About – ${person.name}`,
-  description: `Meet ${person.name}, ${person.role} from ${person.location}`,
+  description: `${person.role} based in Rabat, Morocco. Java, Spring Boot, Kubernetes and secure delivery.`,
   tableOfContent: {
     display: true,
     subItems: false,
@@ -99,136 +96,216 @@ const about: About = {
     display: true,
   },
   calendar: {
-    display: true,
-    link: "https://cal.com",
+    display: false,
+    link: "",
   },
   intro: {
     display: true,
     title: "Introduction",
     description: (
       <>
-        {person.firstName} is a {person.location.split("/")[1]?.replace("_", " ")}-based{" "}
-        {person.role.toLowerCase()} with a passion for transforming complex challenges into simple,
-        elegant design solutions. Their work spans digital interfaces, interactive experiences, and
-        the convergence of design and technology.
+        I build backend platforms and put them into production. That covers the whole path — the
+        Spring Boot service and its authorization model, the pipeline that tests and ships it, the
+        infrastructure it runs on, and the dashboards that prove it is healthy. Most of my work has
+        centred on multi-tenant systems and access control, where being wrong is expensive and
+        "probably fine" is not an answer.
       </>
     ),
   },
   work: {
-    display: true, // set to false to hide this section
+    display: true,
     title: "Work Experience",
     experiences: [
       {
-        company: "FLY",
-        timeframe: "2022 - Present",
-        role: "Senior Design Engineer",
+        company: "SYNERTIC",
+        timeframe: "June – August 2026",
+        role: "Backend & DevOps Engineering Intern",
         achievements: [
           <>
-            Redesigned the UI/UX for the FLY platform, resulting in a 20% increase in user
-            engagement and 30% faster load times.
+            Designed the authorization architecture for a{" "}
+            <strong>multi-tenant SaaS platform</strong> in Java 21 and Spring Boot 4 — identity
+            delegated to Keycloak, policy decisions to Cerbos, with RBAC and ABAC enforced together
+            and strict tenant isolation across the API.
           </>,
           <>
-            Spearheaded the integration of AI tools into design workflows, enabling designers to
-            iterate 50% faster.
+            Built the GitLab CI/CD pipeline end to end: Kaniko image builds, Trivy vulnerability
+            scanning, automated deployment and scheduled maintenance jobs, with{" "}
+            <strong>729 tests</strong> running on every pipeline.
+          </>,
+          <>
+            Deployed and operated the containerized platform on Oracle Cloud with Prometheus,
+            Grafana and Loki, and automated deployment, backups and alerting with Ansible.
+            Load-tested at <strong>186 requests per second</strong> at a <strong>79 ms p95</strong>{" "}
+            latency.
+          </>,
+          <>
+            Published <strong>5 client SDKs</strong> — TypeScript, Python, Java, .NET and Go —
+            validated by a shared conformance suite so every language behaves identically across
+            releases. Two client applications went to production on them.
+          </>,
+          <>
+            Built the React and TypeScript admin console, including a visual BPMN editor for
+            approval workflows (bpmn-js on a Flowable engine) wired to the backend workflow engine.
           </>,
         ],
-        images: [
-          // optional: leave the array empty if you don't want to display images
-          {
-            src: "/images/projects/project-01/cover-01.jpg",
-            alt: "Once UI Project",
-            width: 16,
-            height: 9,
-          },
-        ],
+        images: [],
       },
       {
-        company: "Creativ3",
-        timeframe: "2018 - 2022",
-        role: "Lead Designer",
+        company: "Early-stage startup (France, remote)",
+        timeframe: "July – August 2025",
+        role: "Full Stack Developer Intern",
         achievements: [
           <>
-            Developed a design system that unified the brand across multiple platforms, improving
-            design consistency by 40%.
+            Built a secure <strong>Campaign API module</strong> — 8+ REST endpoints on NestJS,
+            Prisma and MongoDB — covering status management, business workflows and API security
+            with JWT access and refresh tokens.
           </>,
-          <>
-            Led a cross-functional team to launch a new product line, contributing to a 15% increase
-            in overall company revenue.
-          </>,
+          <>Worked in a collaborative Git workflow with code review on every change.</>,
         ],
         images: [],
       },
     ],
   },
   studies: {
-    display: true, // set to false to hide this section
-    title: "Studies",
+    display: true,
+    title: "Education & certification",
     institutions: [
       {
-        name: "University of Jakarta",
-        description: <>Studied software engineering.</>,
+        name: "INPT — Institut National des Postes et Télécommunications, Rabat",
+        description: (
+          <>
+            Engineering degree in Ubiquitous and Distributed Systems, Cloud & IoT specialization.
+            2024 – 2027.
+          </>
+        ),
       },
       {
-        name: "Build the Future",
-        description: <>Studied online marketing and personal branding.</>,
+        name: "CPGE Ibn Timiya, Marrakesh",
+        description: (
+          <>
+            Two-year intensive preparatory program in mathematics and physics (MPSI / MP). 2022 –
+            2024.
+          </>
+        ),
+      },
+      {
+        name: "Oracle Cloud Infrastructure Foundations Associate",
+        description: (
+          <>
+            Certified October 2025 —{" "}
+            <SmartLink href="https://catalog-education.oracle.com/pls/certview/sharebadge?id=18405CC30BE250C13C15C4FC2452776928715E42D1CDFC6B37C4B761F37C04A4">
+              verify the badge
+            </SmartLink>
+            .
+          </>
+        ),
       },
     ],
   },
   technical: {
-    display: true, // set to false to hide this section
+    display: true,
     title: "Technical skills",
     skills: [
       {
-        title: "Figma",
-        description: <>Able to prototype in Figma with Once UI with unnatural speed.</>,
+        title: "Backend & APIs",
+        description: (
+          <>
+            Java 21 and Spring Boot for services that have to be correct under load — Spring
+            Security as an OAuth2 resource server, Hibernate and JPA, Flyway migrations, Spring
+            Cloud Gateway. REST with OpenAPI, plus gRPC and NestJS where they fit better.
+          </>
+        ),
         tags: [
-          {
-            name: "Figma",
-            icon: "figma",
-          },
+          { name: "Java 21", icon: "java" },
+          { name: "Spring Boot", icon: "spring" },
+          { name: "PostgreSQL", icon: "postgresql" },
+          { name: "NestJS", icon: "nestjs" },
+          { name: "Node.js", icon: "nodejs" },
         ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-02.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
-          {
-            src: "/images/projects/project-01/cover-03.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
-        ],
+        images: [],
       },
       {
-        title: "Next.js",
-        description: <>Building next gen apps with Next.js + Once UI + Supabase.</>,
+        title: "Identity & authorization",
+        description: (
+          <>
+            The part most teams get wrong. Keycloak for identity, Cerbos as a policy decision point,
+            OAuth2 Authorization Code with PKCE, and RBAC combined with ABAC. Multi-tenant isolation
+            and fail-closed design, so the default answer to an unclear request is "no".
+          </>
+        ),
         tags: [
-          {
-            name: "JavaScript",
-            icon: "javascript",
-          },
-          {
-            name: "Next.js",
-            icon: "nextjs",
-          },
-          {
-            name: "Supabase",
-            icon: "supabase",
-          },
+          { name: "Keycloak", icon: "keycloak" },
+          { name: "OAuth2 / OIDC", icon: "security" },
+          { name: "RBAC + ABAC", icon: "security" },
         ],
-        // optional: leave the array empty if you don't want to display images
-        images: [
-          {
-            src: "/images/projects/project-01/cover-04.jpg",
-            alt: "Project image",
-            width: 16,
-            height: 9,
-          },
+        images: [],
+      },
+      {
+        title: "Cloud & infrastructure",
+        description: (
+          <>
+            Containers and orchestration in anger: Docker, Kubernetes, Helm, Argo CD for GitOps, and
+            Istio for a service mesh with mutual TLS. Infrastructure defined as code with Terraform
+            on AWS EKS and RDS, and Ansible for configuration. Oracle Cloud certified.
+          </>
+        ),
+        tags: [
+          { name: "Kubernetes", icon: "kubernetes" },
+          { name: "Docker", icon: "docker" },
+          { name: "Terraform", icon: "terraform" },
+          { name: "AWS", icon: "aws" },
+          { name: "Argo CD", icon: "argocd" },
+          { name: "Istio", icon: "istio" },
         ],
+        images: [],
+      },
+      {
+        title: "CI/CD & DevSecOps",
+        description: (
+          <>
+            Pipelines that refuse to ship broken or vulnerable code: secrets scanning with Gitleaks,
+            static analysis with SonarQube, container scanning with Trivy and dynamic testing with
+            OWASP ZAP, secrets managed through Sealed Secrets. Build, scan, deploy — in that order,
+            every time.
+          </>
+        ),
+        tags: [
+          { name: "GitLab CI/CD", icon: "gitlab" },
+          { name: "SonarQube", icon: "sonarqube" },
+          { name: "Linux", icon: "linux" },
+        ],
+        images: [],
+      },
+      {
+        title: "Observability & testing",
+        description: (
+          <>
+            Prometheus, Grafana, Loki, Promtail and Alertmanager — the stack I used to diagnose a
+            real cluster-overload incident rather than guess at it. Load testing with k6, JUnit and
+            Vitest suites wired into CI so regressions surface before a deploy, not after.
+          </>
+        ),
+        tags: [
+          { name: "Prometheus", icon: "prometheus" },
+          { name: "Grafana", icon: "grafana" },
+        ],
+        images: [],
+      },
+      {
+        title: "Frontend",
+        description: (
+          <>
+            Enough React to build the interface a backend deserves: React 19 and TypeScript with
+            TanStack Query for server state, Vite, and Tailwind. Recently a seven-role admin
+            interface where every role sees a genuinely different application.
+          </>
+        ),
+        tags: [
+          { name: "React", icon: "react" },
+          { name: "TypeScript", icon: "typescript" },
+          { name: "Tailwind", icon: "tailwind" },
+        ],
+        images: [],
       },
     ],
   },
@@ -237,70 +314,25 @@ const about: About = {
 const blog: Blog = {
   path: "/blog",
   label: "Blog",
-  title: "Writing about design and tech...",
+  title: "Writing about backend and infrastructure",
   description: `Read what ${person.name} has been up to recently`,
-  // Create new blog posts by adding a new .mdx file to app/blog/posts
-  // All posts will be listed on the /blog route
 };
 
 const work: Work = {
   path: "/work",
   label: "Work",
   title: `Projects – ${person.name}`,
-  description: `Design and dev projects by ${person.name}`,
-  // Create new project pages by adding a new .mdx file to app/blog/posts
-  // All projects will be listed on the /home and /work routes
+  description: `Backend, cloud and platform projects by ${person.name}`,
 };
 
 const gallery: Gallery = {
   path: "/gallery",
   label: "Gallery",
-  title: `Photo gallery – ${person.name}`,
-  description: `A photo collection by ${person.name}`,
-  // Images by https://lorant.one
-  // These are placeholder images, replace with your own
-  images: [
-    {
-      src: "/images/gallery/horizontal-1.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-4.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-3.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-1.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/vertical-2.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-    {
-      src: "/images/gallery/horizontal-2.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/horizontal-4.jpg",
-      alt: "image",
-      orientation: "horizontal",
-    },
-    {
-      src: "/images/gallery/vertical-3.jpg",
-      alt: "image",
-      orientation: "vertical",
-    },
-  ],
+  title: `Architecture & dashboards – ${person.name}`,
+  description: "Architecture diagrams, pipelines and dashboards from projects I've built",
+  // Awaiting real assets: architecture diagrams, Grafana dashboards, pipeline
+  // screenshots. The route stays disabled in once-ui.config.ts until then.
+  images: [],
 };
 
 const contact: Contact = {
