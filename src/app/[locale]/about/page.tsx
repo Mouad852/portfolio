@@ -12,22 +12,33 @@ import {
   Schema,
   Row,
 } from "@once-ui-system/core";
-import { baseURL, about, person, social } from "@/resources";
+import { notFound } from "next/navigation";
+import { baseURL, getContent, isLocale, localePath } from "@/resources";
 import TableOfContents from "@/components/about/TableOfContents";
 import styles from "@/components/about/about.module.scss";
 import React from "react";
 
-export async function generateMetadata() {
+type LocaleParams = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: LocaleParams) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const { about } = getContent(locale);
+
   return Meta.generate({
     title: about.title,
     description: about.description,
     baseURL: baseURL,
     image: `/api/og/generate?title=${encodeURIComponent(about.title)}`,
-    path: about.path,
+    path: localePath(locale, about.path),
   });
 }
 
-export default function About() {
+export default async function About({ params }: LocaleParams) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const { about, person, social } = getContent(locale);
+
   const structure = [
     {
       title: about.intro.title,
@@ -57,11 +68,11 @@ export default function About() {
         baseURL={baseURL}
         title={about.title}
         description={about.description}
-        path={about.path}
+        path={localePath(locale, about.path)}
         image={`/api/og/generate?title=${encodeURIComponent(about.title)}`}
         author={{
           name: person.name,
-          url: `${baseURL}${about.path}`,
+          url: `${baseURL}${localePath(locale, about.path)}`,
           image: `${baseURL}${person.avatar}`,
         }}
       />

@@ -11,33 +11,44 @@ import {
   Meta,
   Line,
 } from "@once-ui-system/core";
-import { home, about, person, baseURL, routes } from "@/resources";
+import { notFound } from "next/navigation";
+import { baseURL, getContent, isLocale, localePath } from "@/resources";
 import { Mailchimp } from "@/components";
 import { Projects } from "@/components/work/Projects";
 
-export async function generateMetadata() {
+type LocaleParams = { params: Promise<{ locale: string }> };
+
+export async function generateMetadata({ params }: LocaleParams) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const { home } = getContent(locale);
+
   return Meta.generate({
     title: home.title,
     description: home.description,
     baseURL: baseURL,
-    path: home.path,
+    path: localePath(locale, home.path),
     image: home.image,
   });
 }
 
-export default function Home() {
+export default async function Home({ params }: LocaleParams) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const { home, about, person } = getContent(locale);
+
   return (
     <Column maxWidth="m" gap="xl" paddingY="12" horizontal="center">
       <Schema
         as="webPage"
         baseURL={baseURL}
-        path={home.path}
+        path={localePath(locale, home.path)}
         title={home.title}
         description={home.description}
         image={`/api/og/generate?title=${encodeURIComponent(home.title)}`}
         author={{
           name: person.name,
-          url: `${baseURL}${about.path}`,
+          url: `${baseURL}${localePath(locale, about.path)}`,
           image: `${baseURL}${person.avatar}`,
         }}
       />
@@ -58,7 +69,7 @@ export default function Home() {
                 onBackground="neutral-strong"
                 textVariant="label-default-s"
                 arrow={false}
-                href={home.featured.href}
+                href={localePath(locale, home.featured.href)}
               >
                 <Row paddingY="2">{home.featured.title}</Row>
               </Badge>
@@ -78,7 +89,7 @@ export default function Home() {
             <Button
               id="about"
               data-border="rounded"
-              href={about.path}
+              href={localePath(locale, about.path)}
               variant="secondary"
               size="m"
               weight="default"
@@ -100,9 +111,9 @@ export default function Home() {
         </Column>
       </Column>
       <RevealFx translateY="16" delay={0.6}>
-        <Projects range={[1, 1]} />
+        <Projects locale={locale} range={[1, 1]} />
       </RevealFx>
-      <Projects range={[2]} />
+      <Projects locale={locale} range={[2]} />
       <Mailchimp />
     </Column>
   );

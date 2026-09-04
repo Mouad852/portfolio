@@ -1,14 +1,16 @@
-import { getPosts } from "@/utils/utils";
+import { getProjects } from "@/utils/utils";
 import { Column } from "@once-ui-system/core";
 import { ProjectCard } from "@/components";
+import { localePath, type Locale } from "@/resources";
 
 interface ProjectsProps {
+  locale: Locale;
   range?: [number, number?];
   exclude?: string[];
 }
 
-export function Projects({ range, exclude }: ProjectsProps) {
-  let allProjects = getPosts(["src", "app", "work", "projects"]);
+export function Projects({ locale, range, exclude }: ProjectsProps) {
+  let allProjects = getProjects(locale);
 
   // Exclude by slug (exact match)
   if (exclude && exclude.length > 0) {
@@ -29,7 +31,7 @@ export function Projects({ range, exclude }: ProjectsProps) {
         <ProjectCard
           priority={index < 2}
           key={post.slug}
-          href={`/work/${post.slug}`}
+          href={localePath(locale, `/work/${post.slug}`)}
           images={post.metadata.images}
           title={post.metadata.title}
           description={post.metadata.summary}

@@ -1,5 +1,5 @@
 import { notFound } from "next/navigation";
-import { getPosts } from "@/utils/utils";
+import { getProjects } from "@/utils/utils";
 import {
   Meta,
   Schema,
@@ -15,31 +15,35 @@ import {
   Avatar,
   Line,
 } from "@once-ui-system/core";
-import { baseURL, about, person, work } from "@/resources";
+import { baseURL, getContent, isLocale, localePath, locales } from "@/resources";
 import { formatDate } from "@/utils/formatDate";
 import { ScrollToHash, CustomMDX } from "@/components";
 import { Metadata } from "next";
 import { Projects } from "@/components/work/Projects";
 
-export async function generateStaticParams(): Promise<{ slug: string }[]> {
-  const posts = getPosts(["src", "app", "work", "projects"]);
-  return posts.map((post) => ({
-    slug: post.slug,
-  }));
+type RouteParams = { locale: string; slug: string | string[] };
+
+export async function generateStaticParams(): Promise<{ locale: string; slug: string }[]> {
+  // Each locale only advertises the case studies it actually has.
+  return locales.flatMap((locale) =>
+    getProjects(locale).map((post) => ({ locale, slug: post.slug })),
+  );
 }
 
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ slug: string | string[] }>;
+  params: Promise<RouteParams>;
 }): Promise<Metadata> {
   const routeParams = await params;
+  if (!isLocale(routeParams.locale)) return {};
+
   const slugPath = Array.isArray(routeParams.slug)
     ? routeParams.slug.join("/")
     : routeParams.slug || "";
 
-  const posts = getPosts(["src", "app", "work", "projects"]);
-  let post = posts.find((post) => post.slug === slugPath);
+  const { work } = getContent(routeParams.locale);
+  const post = getProjects(routeParams.locale).find((post) => post.slug === slugPath);
 
   if (!post) return {};
 
@@ -48,21 +52,21 @@ export async function generateMetadata({
     description: post.metadata.summary,
     baseURL: baseURL,
     image: post.metadata.image || `/api/og/generate?title=${post.metadata.title}`,
-    path: `${work.path}/${post.slug}`,
+    path: localePath(routeParams.locale, `${work.path}/${post.slug}`),
   });
 }
 
-export default async function Project({
-  params,
-}: {
-  params: Promise<{ slug: string | string[] }>;
-}) {
+export default async function Project({ params }: { params: Promise<RouteParams> }) {
   const routeParams = await params;
+  if (!isLocale(routeParams.locale)) notFound();
+
+  const locale = routeParams.locale;
   const slugPath = Array.isArray(routeParams.slug)
     ? routeParams.slug.join("/")
     : routeParams.slug || "";
 
-  let post = getPosts(["src", "app", "work", "projects"]).find((post) => post.slug === slugPath);
+  const { work, about, person } = getContent(locale);
+  const post = getProjects(locale).find((post) => post.slug === slugPath);
 
   if (!post) {
     notFound();
@@ -78,7 +82,7 @@ export default async function Project({
       <Schema
         as="blogPosting"
         baseURL={baseURL}
-        path={`${work.path}/${post.slug}`}
+        path={localePath(locale, `${work.path}/${post.slug}`)}
         title={post.metadata.title}
         description={post.metadata.summary}
         datePublished={post.metadata.publishedAt}
@@ -88,13 +92,13 @@ export default async function Project({
         }
         author={{
           name: person.name,
-          url: `${baseURL}${about.path}`,
+          url: `${baseURL}${localePath(locale, about.path)}`,
           image: `${baseURL}${person.avatar}`,
         }}
       />
       <Column maxWidth="s" gap="16" horizontal="center" align="center">
-        <SmartLink href="/work">
-          <Text variant="label-strong-m">Projects</Text>
+        <SmartLink href={localePath(locale, work.path)}>
+          <Text variant="label-strong-m">{work.label}</Text>
         </SmartLink>
         <Text variant="body-default-xs" onBackground="neutral-weak" marginBottom="12">
           {post.metadata.publishedAt && formatDate(post.metadata.publishedAt)}
@@ -129,7 +133,7 @@ export default async function Project({
         <Heading as="h2" variant="heading-strong-xl" marginBottom="24">
           Related projects
         </Heading>
-        <Projects exclude={[post.slug]} range={[2]} />
+        <Projects locale={locale} exclude={[post.slug]} range={[2]} />
       </Column>
       <ScrollToHash />
     </Column>
